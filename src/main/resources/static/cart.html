@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BookHaven — Cart</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <style>
+
+    .cart-container{
+      max-width:1100px;
+      margin:0 auto;
+      padding:2rem 2.5rem 4rem;
+    }
+
+    /* SIDE BY SIDE */
+    .cart-container.has-items{
+      display:grid;
+      grid-template-columns:1fr 340px;
+      gap:2rem;
+      align-items:start;
+    }
+
+    /* EMPTY CENTERED */
+    .cart-container.empty-page{
+      min-height:60vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    /* ITEM */
+    .cart-item{
+      background:var(--navy-card);
+      border:1px solid var(--navy-border);
+      border-radius:var(--r-lg);
+      padding:1.1rem 1.3rem;
+      display:flex;
+      align-items:center;
+      gap:1.2rem;
+      margin-bottom:1rem;
+    }
+
+    .cart-item-cover{
+      width:60px;
+      height:78px;
+      object-fit:cover;
+      border-radius:4px;
+      background:var(--navy-border);
+    }
+
+    .cart-item-info{flex:1}
+
+    .cart-item-title{
+      font-family:'Cormorant Garamond',serif;
+      font-weight:700;
+      color:var(--ivory);
+    }
+
+    .cart-item-unit{
+      font-size:.8rem;
+      color:var(--text-muted);
+      margin-bottom:.4rem;
+    }
+
+    .cart-item-right{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:.5rem;
+    }
+
+    .cart-item-subtotal{
+      color:var(--gold);
+      font-weight:700;
+      font-family:'Cormorant Garamond',serif;
+    }
+
+    /* SUMMARY */
+    .cart-summary{
+      background:var(--navy-card);
+      border:1px solid var(--navy-border);
+      border-radius:var(--r-lg);
+      padding:1.5rem;
+      position:sticky;
+      top:calc(var(--nav-h) + 20px);
+    }
+
+    .summary-title{
+      font-family:'Cormorant Garamond',serif;
+      font-weight:700;
+      margin-bottom:1rem;
+      border-bottom:1px solid var(--navy-border);
+      padding-bottom:.7rem;
+    }
+
+    .summary-row{
+      display:flex;
+      justify-content:space-between;
+      font-size:.85rem;
+      margin-bottom:.4rem;
+    }
+
+    .summary-total{
+      display:flex;
+      justify-content:space-between;
+      margin-top:1rem;
+      padding-top:1rem;
+      border-top:1px solid var(--navy-border);
+      font-weight:700;
+    }
+
+    .summary-total .val{
+      color:var(--gold);
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.2rem;
+    }
+
+    .checkout-btn{margin-top:1rem}
+
+  </style>
+</head>
+
+<body>
+
+<nav class="nav" id="main-nav"></nav>
+<div id="toast-container"></div>
+
+<div class="page-header">
+  <h1 class="page-header-title">Shopping Cart</h1>
+  <p class="page-header-sub">Review your items before checkout</p>
+</div>
+
+<div class="cart-container" id="cart-container"></div>
+
+<script src="js/api.js"></script>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded',()=>{
+
+    if(!Auth.isLoggedIn()){
+      window.location="login.html"
+      return
+    }
+
+    renderNav('cart')
+    loadCartBadge()
+    loadCart()
+
+  })
+
+  async function loadCart(){
+    const data=await apiFetch('/api/cart')
+    renderCart(data)
+  }
+
+  function renderCart(data){
+
+    const container=document.getElementById("cart-container")
+    const items=data.items||[]
+
+    /* EMPTY */
+    if(!items.length){
+
+      container.classList.remove("has-items")
+      container.classList.add("empty-page")
+
+      container.innerHTML=`
+      <div class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <h3>Your cart is empty</h3>
+        <p>Browse the catalog and add some books!</p>
+        <a class="btn btn-primary mt-2" href="index.html" style="text-decoration: none;">Browse Books</a>
+      </div>
+    `
+      return
+    }
+
+    /* WITH ITEMS */
+    container.classList.remove("empty-page")
+    container.classList.add("has-items")
+
+    container.innerHTML = `
+
+<div class="cart-items">
+
+${items.map(item=>`
+
+<div class="cart-item">
+
+<img class="cart-item-cover"
+src="${item.coverURL||''}">
+
+<div class="cart-item-info">
+<div class="cart-item-title">${item.bookTitle}</div>
+<div class="cart-item-unit">${formatPrice(item.bookPrice)} each</div>
+
+<div class="qty-stepper">
+<button onclick="updateQty(${item.bookId},${item.quantity-1})">−</button>
+<span>${item.quantity}</span>
+<button onclick="updateQty(${item.bookId},${item.quantity+1})">+</button>
+</div>
+
+</div>
+
+<div class="cart-item-right">
+<div class="cart-item-subtotal">
+${formatPrice(item.bookPrice*item.quantity)}
+</div>
+
+<button class="btn btn-ghost btn-sm"
+onclick="removeItem(${item.bookId})">
+Remove
+</button>
+</div>
+
+</div>
+
+`).join('')}
+
+</div>
+
+<div class="cart-summary">
+
+<div class="summary-title">Order Summary</div>
+
+<div class="summary-row">
+<span>Items</span>
+<span>${items.length}</span>
+</div>
+
+<div class="summary-total">
+<span>Total</span>
+<span class="val">
+${formatPrice(data.totalPrice||0)}
+</span>
+</div>
+
+<button class="btn btn-primary btn-full checkout-btn"
+onclick="doCheckout()">
+Proceed to Checkout
+</button>
+
+</div>
+`
+  }
+
+  async function updateQty(bookId,qty){
+
+    if(qty<1){
+      removeItem(bookId)
+      return
+    }
+
+    await apiFetch(`/api/cart/my-cart/${bookId}?quantity=${qty}`,{
+      method:"PUT"
+    })
+
+    loadCart()
+    loadCartBadge()
+  }
+
+  async function removeItem(bookId){
+
+    await apiDelete(`/api/cart/my-cart/${bookId}`)
+
+    loadCart()
+    loadCartBadge()
+  }
+
+  async function doCheckout(){
+
+    await apiPost('/api/orders/checkout',{})
+
+    toast("Order placed!","success")
+
+    loadCartBadge()
+
+    setTimeout(()=>{
+      window.location="orders.html"
+    },1000)
+  }
+
+</script>
+
+</body>
+</html>

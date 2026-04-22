@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookHaven — My Orders</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .orders-container {
+      max-width: 860px; margin: 0 auto;
+      padding: 2rem 2.5rem 4rem;
+    }
+
+    .order-card {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-border);
+      border-radius: var(--r-lg);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+    .order-card:hover { border-color: rgba(201,168,76,0.3); }
+
+    .order-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 1.5rem;
+      background: rgba(255,255,255,0.025);
+      border-bottom: 1px solid var(--navy-border);
+      flex-wrap: wrap; gap: 0.7rem;
+    }
+    .order-meta {}
+    .order-id {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem; font-weight: 700; color: var(--ivory);
+    }
+    .order-date { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .order-total {
+      font-size: 1.2rem; font-weight: 700; color: var(--gold);
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    .order-items { padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; }
+
+    .order-item {
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .order-item-cover {
+      width: 44px; height: 58px;
+      object-fit: cover; border-radius: 3px;
+      background: var(--navy-border); flex-shrink: 0;
+    }
+    .order-item-cover-ph {
+      width: 44px; height: 58px; flex-shrink: 0;
+      background: var(--navy-border); border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    .order-item-info { flex: 1; min-width: 0; }
+    .order-item-title {
+      font-size: 0.9rem; font-weight: 600; color: var(--ivory);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .order-item-detail { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .order-item-price { font-size: 0.9rem; font-weight: 600; color: var(--gold); flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="main-nav"></nav>
+<div id="toast-container"></div>
+
+<div class="page-header">
+  <h1 class="page-header-title">My Orders</h1>
+  <p class="page-header-sub">Your complete purchase history</p>
+</div>
+
+<div class="orders-container" id="orders-container">
+  <div class="skeleton" style="height:130px;border-radius:10px;margin-bottom:1.5rem"></div>
+  <div class="skeleton" style="height:130px;border-radius:10px;margin-bottom:1.5rem"></div>
+  <div class="skeleton" style="height:130px;border-radius:10px"></div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+    renderNav('orders');
+    loadOrders();
+  });
+
+  async function loadOrders() {
+    const container = document.getElementById('orders-container');
+    try {
+      // GET /api/orders/my-orders → List<OrderResponseDTO>
+      // OrderResponseDTO: { orderId, items[{bookId, title, quantity, price, coverURL}], totalPrice, orderDate, username }
+      const orders = await apiFetch('/api/orders/my-orders');
+
+      if (!orders || !orders.length) {
+        container.classList.add('empty-page');
+        container.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">📦</div>
+      <h3>No orders yet</h3>
+      <p>Complete a checkout to see your orders here.</p>
+      <a class="btn btn-primary mt-2" href="index.html">Start Shopping</a>
+    </div>`;
+        return;
+      }
+
+      container.innerHTML = orders.map(o => `
+        <div class="order-card">
+          <div class="order-header">
+            <div class="order-meta">
+              <div class="order-id">Order #${o.orderId}</div>
+              <div class="order-date">${formatDateTime(o.orderDate)}</div>
+            </div>
+            <div class="order-total">${formatPrice(o.totalPrice)}</div>
+          </div>
+          <div class="order-items">
+            ${(o.items || []).map(item => `
+              <div class="order-item">
+                ${item.coverURL
+                  ? `<img class="order-item-cover" src="${escHtml(item.coverURL)}" alt="${escHtml(item.title)}" onerror="this.outerHTML='<div class=order-item-cover-ph>📖</div>'">`
+                  : `<div class="order-item-cover-ph">📖</div>`}
+                <div class="order-item-info">
+                  <div class="order-item-title">${escHtml(item.title)}</div>
+                  <div class="order-item-detail">Qty: ${item.quantity} &times; ${formatPrice(item.price)}</div>
+                </div>
+                <div class="order-item-price">${formatPrice(item.price * item.quantity)}</div>
+              </div>`).join('')}
+          </div>
+        </div>`).join('');
+
+    } catch(e) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">📡</div>
+          <h3>Failed to load orders</h3>
+          <p>${escHtml(e.message)}</p>
+        </div>`;
+    }
+  }
+</script>
+</body>
+</html>

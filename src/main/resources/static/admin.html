@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BookHaven — Admin</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+
+    /* ───── PREMIUM FONT SYSTEM ───── */
+
+    body,
+    button,
+    input,
+    select,
+    textarea{
+      font-family:'Outfit',sans-serif !important;
+    }
+
+    /* titles */
+    h1,
+    .section-head h2,
+    .modal-title{
+      font-family:'Cormorant Garamond',serif !important;
+      font-weight:700;
+      letter-spacing:.4px;
+    }
+
+    /* stat labels */
+    .stat-label{
+      font-family:'Outfit',sans-serif !important;
+      font-weight:600;
+      letter-spacing:.8px;
+    }
+
+    /* stat numbers */
+    .stat-value{
+      font-family:'Cormorant Garamond',serif !important;
+      font-weight:700;
+      font-size:1.8rem;
+    }
+
+    /* sidebar */
+    .sidebar,
+    .sidebar *{
+      font-family:'Outfit',sans-serif !important;
+    }
+
+    /* logo */
+    .logo,
+    .brand,
+    .nav-brand{
+      font-family:'Cormorant Garamond',serif !important;
+      font-weight:700;
+    }
+
+    /* table headers */
+    table th{
+      font-family:'Outfit',sans-serif !important;
+      letter-spacing:.6px;
+      font-weight:600;
+    }
+
+    /* ── SECTION HEADERS ── */
+    .section-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:1.2rem;
+      flex-wrap:wrap;
+      gap:.8rem;
+    }
+
+    .section-head h2{
+      font-size:1.4rem;
+      color:var(--ivory);
+    }
+
+    /* ── BOOK MODAL ── */
+    .book-form-modal{
+      width:min(560px,96vw);
+    }
+
+    /* ── USER AVATAR ── */
+    .user-avatar{
+      width:34px;
+      height:34px;
+      border-radius:50%;
+      background:var(--gold-pale);
+      border:1px solid var(--gold);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:.82rem;
+      font-weight:700;
+      color:var(--gold);
+    }
+
+    /* ── STATUS TOGGLE ── */
+    .toggle-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:.35rem;
+      font-size:.78rem;
+      font-weight:600;
+      cursor:pointer;
+      background:none;
+      border:1.5px solid;
+      border-radius:var(--r);
+      padding:.25rem .65rem;
+      font-family:'Outfit',sans-serif;
+      transition:.15s;
+    }
+
+    .toggle-btn.active{color:#81c784;border-color:rgba(46,125,94,.5);}
+    .toggle-btn.active:hover{background:rgba(46,125,94,.15);}
+    .toggle-btn.inactive{color:#e57373;border-color:rgba(192,57,43,.5);}
+    .toggle-btn.inactive:hover{background:rgba(192,57,43,.15);}
+
+    /* TABLE COVER */
+    .tbl-cover{
+      width:34px;
+      height:44px;
+      object-fit:cover;
+      border-radius:3px;
+      background:var(--navy-border);
+    }
+
+    .tbl-cover-ph{
+      width:34px;
+      height:44px;
+      border-radius:3px;
+      background:var(--navy-border);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    /* ORDER EXPAND */
+    .order-expand-row{display:none;background:rgba(255,255,255,.02);}
+    .order-expand-row.open{display:table-row;}
+    .order-expand-inner{padding:.8rem 1.5rem 1rem;}
+
+    .mini-item{
+      display:flex;
+      align-items:center;
+      gap:.7rem;
+      font-size:.82rem;
+      padding:.3rem 0;
+    }
+
+    /* CAT TABLE */
+    .cat-name-cell{
+      font-weight:600;
+      color:var(--ivory);
+    }
+
+    /* FORM DOUBLE */
+    .form-row-2{
+      display:flex;
+      gap:1rem;
+    }
+
+    .form-row-2 .form-group{
+      flex:1;
+    }
+
+    .checkbox-list{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.5rem;
+    }
+
+    .checkbox-item{
+      display:flex;
+      align-items:center;
+      gap:.35rem;
+      padding:.35rem .6rem;
+      border:1px solid var(--navy-border);
+      border-radius:6px;
+      cursor:pointer;
+      font-size:.8rem;
+    }
+
+    .checkbox-item:hover{
+      border-color:var(--gold);
+    }
+
+    .checkbox-item input{
+      accent-color:var(--gold);
+    }
+
+    .modal-header{
+      justify-content:center;
+      text-align:center;
+    }
+
+    .modal-title{
+      width:100%;
+      text-align:center;
+    }
+
+    .modal-close{
+      display:none;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="main-nav"></nav>
+<div id="toast-container"></div>
+
+<!-- CONFIRM -->
+<div id="confirm-overlay">
+  <div class="confirm-box">
+    <h3 class="confirm-title">Confirm</h3>
+    <p class="confirm-msg">Are you sure?</p>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="confirmNo()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmYes()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── BOOK MODAL ── -->
+<div class="modal-overlay" id="book-modal-overlay">
+  <div class="modal book-form-modal" id="book-modal">
+    <div class="modal-header">
+      <span class="modal-title" id="book-modal-title">Add Book</span>
+<!--      <button class="modal-close" onclick="closeBookModal()">✕</button>-->
+    </div>
+    <div class="modal-body">
+      <div class="auth-form" style="display:flex;flex-direction:column;gap:1rem">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Title *</label>
+            <input class="form-input" id="bm-title" type="text" placeholder="Book Title" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Author *</label>
+            <input class="form-input" id="bm-author" type="text" placeholder="Author Name" />
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Price (₱) *</label>
+            <input class="form-input" id="bm-price" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Categories</label>
+            <div id="bm-categories" class="checkbox-list"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cover Image URL</label>
+          <input class="form-input" id="bm-cover" type="url" placeholder="https://…" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description *</label>
+          <textarea class="form-textarea" id="bm-desc" placeholder="Book description…"></textarea>
+        </div>
+        <div class="msg-box" id="book-modal-msg" style="display:none;padding:0.7rem 1rem;border-radius:4px;font-size:.84rem"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeBookModal()">Cancel</button>
+      <button class="btn btn-primary" id="book-modal-save" onclick="saveBook()">Save Book</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CATEGORY MODAL ── -->
+<div class="modal-overlay" id="cat-modal-overlay">
+  <div class="modal" style="width:min(400px,96vw)">
+    <div class="modal-header">
+      <span class="modal-title" id="cat-modal-title">Add Category</span>
+<!--      <button class="modal-close" onclick="closeCatModal()">✕</button>-->
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Category Name *</label>
+        <input class="form-input" id="cat-name-input" type="text" placeholder="e.g. Science Fiction"
+          onkeydown="if(event.key==='Enter')saveCat()" />
+      </div>
+      <div class="msg-box" id="cat-modal-msg" style="display:none;padding:0.7rem 1rem;border-radius:4px;font-size:.84rem;margin-top:.7rem"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeCatModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCat()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── USER MODAL ── -->
+<div class="modal-overlay" id="user-modal-overlay">
+  <div class="modal" style="width:min(480px,96vw)">
+    <div class="modal-header">
+      <span class="modal-title" id="user-modal-title">Edit User</span>
+<!--      <button class="modal-close" onclick="closeUserModal()">✕</button>-->
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-input" id="um-firstname" type="text" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input class="form-input" id="um-lastname" type="text" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="form-input" id="um-username" type="text" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password <span class="text-muted" style="font-size:.78rem;text-transform:none">(leave blank to keep)</span></label>
+          <input class="form-input" id="um-password" type="password" placeholder="New password…" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select class="form-select" id="um-role">
+            <option value="user">user</option>
+            <option value="admin">admin</option>
+          </select>
+        </div>
+        <div class="msg-box" id="user-modal-msg" style="display:none;padding:0.7rem 1rem;border-radius:4px;font-size:.84rem"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeUserModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUser()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     LAYOUT
+══════════════════════════════════════ -->
+<div class="page">
+  <div class="page-container">
+    <div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-label">Dashboard</div>
+    <button class="sidebar-link active" id="sl-overview" onclick="showSection('overview')"><span class="icon">📊</span> Overview</button>
+    <div class="sidebar-label">Manage</div>
+    <button class="sidebar-link" id="sl-books" onclick="showSection('books')"><span class="icon">📚</span> Books</button>
+    <button class="sidebar-link" id="sl-categories" onclick="showSection('categories')"><span class="icon">🏷️</span> Categories</button>
+    <button class="sidebar-link" id="sl-users" onclick="showSection('users')"><span class="icon">👥</span> Users</button>
+    <button class="sidebar-link" id="sl-orders" onclick="showSection('orders')"><span class="icon">📦</span> Orders</button>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="admin-content">
+
+    <!-- ── OVERVIEW ── -->
+    <section id="sec-overview">
+      <div class="section-head" style="margin-bottom:2rem">
+        <div>
+          <h2 style="font-size:1.7rem">Dashboard</h2>
+          <p class="text-muted" style="margin-top:.25rem;font-size:.88rem">Welcome to BookHaven Admin</p>
+        </div>
+      </div>
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total Books</div><div class="stat-value gold" id="stat-books">—</div></div>
+        <div class="stat-card"><div class="stat-label">Categories</div><div class="stat-value" id="stat-cats">—</div></div>
+        <div class="stat-card"><div class="stat-label">Users</div><div class="stat-value" id="stat-users">—</div></div>
+        <div class="stat-card"><div class="stat-label">Total Orders</div><div class="stat-value" id="stat-orders">—</div></div>
+      </div>
+      <div class="card" style="padding:1.5rem;margin-top:0.5rem">
+        <p class="text-muted" style="font-size:.88rem;line-height:1.8">
+          Use the sidebar to manage books, categories, users, and orders. All changes sync directly to the MySQL database via your Spring Boot REST API.
+          <br><br>
+          <strong class="text-gold">Tip:</strong> Use the catalog page to preview how books appear to customers.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── BOOKS ── -->
+    <section id="sec-books" style="display:none">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-bar-wrap" style="width:260px">
+            <span class="icon">🔍</span>
+            <input class="search-bar" id="book-search" placeholder="Search books…" oninput="debounce(loadBookTable, 350)()" />
+          </div>
+          <select class="form-select" id="book-cat-filter" onchange="loadBookTable()" style="width:160px">
+            <option value="">All Categories</option>
+          </select>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn btn-primary" onclick="openAddBook()">+ Add Book</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Cover</th><th>Title</th><th>Author</th>
+            <th>Category</th><th>Price</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="book-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="book-pager"></div>
+    </section>
+
+    <!-- ── CATEGORIES ── -->
+    <section id="sec-categories" style="display:none">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-bar-wrap" style="width:260px">
+            <span class="icon">🔍</span>
+            <input class="search-bar" id="cat-search" placeholder="Search categories…" oninput="debounce(loadCatTable, 300)()" />
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn btn-primary" onclick="openAddCat()">+ Add Category</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Actions</th></tr></thead>
+          <tbody id="cat-tbody"><tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="cat-pager"></div>
+    </section>
+
+    <!-- ── USERS ── -->
+    <section id="sec-users" style="display:none">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-bar-wrap" style="width:260px">
+            <span class="icon">🔍</span>
+            <input class="search-bar" id="user-search" placeholder="Search users…" oninput="debounce(loadUserTable, 300)()" />
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <button class="btn btn-primary" onclick="openAddUser()">+ Add User</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>User</th><th>Username</th><th>Role</th>
+            <th>Joined</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="user-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="user-pager"></div>
+    </section>
+
+    <!-- ── ORDERS ── -->
+    <section id="sec-orders" style="display:none">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-bar-wrap" style="width:280px">
+            <span class="icon">🔍</span>
+            <input class="search-bar" id="order-search" placeholder="Search by username…" oninput="debounce(loadOrderTable, 300)()" />
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Order ID</th><th>Username</th><th>Date</th>
+            <th>Total</th><th>Items</th><th></th>
+          </tr></thead>
+          <tbody id="order-tbody"><tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="order-pager"></div>
+    </section>
+
+  </main>
+    </div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script>
+// ── GUARD ──
+document.addEventListener('DOMContentLoaded', () => {
+  if (!Auth.isLoggedIn() || !Auth.isAdmin()) {
+    window.location.href = 'login.html'; return;
+  }
+  renderAdminNav();
+  ensureConfirmDialog();
+  showSection('overview');
+});
+
+// ── SECTION SWITCH ──
+const SECTIONS = ['overview','books','categories','users','orders'];
+function showSection(name) {
+  SECTIONS.forEach(s => {
+    document.getElementById(`sec-${s}`).style.display = s === name ? '' : 'none';
+    document.getElementById(`sl-${s}`).classList.toggle('active', s === name);
+  });
+  if (name === 'overview')   loadOverview();
+  if (name === 'books')      { loadAdminCategories(); loadBookTable(); }
+  if (name === 'categories') loadCatTable();
+  if (name === 'users')      loadUserTable();
+  if (name === 'orders')     loadOrderTable();
+}
+
+// ── STATE ──
+let bookPage = 0, bookTotal = 0;
+let catPage  = 0, catTotal  = 0;
+let userPage = 0, userTotal = 0;
+let orderPage= 0, orderTotal= 0;
+let adminCats = [];
+let editBookId = null, editCatId = null, editUserId = null;
+
+// ── MODAL HELPERS ──
+function openModal(id)  { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal_(id){
+  document.getElementById(id).classList.remove('open');
+
+  if (!document.querySelector('.modal-overlay.open')) {
+    document.body.style.overflow='';
+  }
+}
+function closeBookModal(){ closeModal_('book-modal-overlay'); }
+function closeCatModal() { closeModal_('cat-modal-overlay'); }
+function closeUserModal(){ closeModal_('user-modal-overlay'); }
+function showModalMsg(id, text, type){
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.style.background = type==='error' ? 'rgba(192,57,43,.18)' : 'rgba(46,125,94,.18)';
+  el.style.color = type==='error' ? '#e57373' : '#81c784';
+  el.style.border = type==='error' ? '1px solid rgba(192,57,43,.3)' : '1px solid rgba(46,125,94,.3)';
+  el.style.display = 'block';
+}
+function clearModalMsg(id){ const el=document.getElementById(id); el.style.display='none'; el.textContent=''; }
+
+// CLOSE WHEN CLICK OUTSIDE
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('mousedown', e => {
+    if (e.target === overlay) {
+      closeModal_(overlay.id);
+    }
+  });
+});
+
+// ── OVERVIEW ──
+async function loadOverview() {
+  try {
+    const [books, cats, users, orders] = await Promise.all([
+      apiFetch('/api/admin/books?page=0&size=1'),
+      apiFetch('/api/admin/categories?page=0&size=1'),
+      apiFetch('/api/admin/users?page=0&size=1'),
+      apiFetch('/api/admin/orders?page=0&size=1'),
+    ]);
+    document.getElementById('stat-books').textContent  = books.totalElements  ?? '—';
+    document.getElementById('stat-cats').textContent   = cats.totalElements   ?? '—';
+    document.getElementById('stat-users').textContent  = users.totalElements  ?? '—';
+    document.getElementById('stat-orders').textContent = orders.totalElements ?? '—';
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── ADMIN CATEGORIES (for book modal + filters) ──
+async function loadAdminCategories() {
+  try {
+    const data = await apiFetch("/api/admin/categories?page=0&size=100");
+    adminCats = data.content || [];
+
+    // ── BOOK MODAL CHECKBOXES ──
+    const wrap = document.getElementById('bm-categories');
+    wrap.innerHTML = '';
+
+    adminCats.forEach(c => {
+      wrap.innerHTML += `
+        <label class="checkbox-item">
+          <input type="checkbox" value="${c.id}">
+          ${escHtml(c.name)}
+        </label>
+      `;
+    });
+
+    // ── BOOK FILTER DROPDOWN ──
+    const filt = document.getElementById('book-cat-filter');
+    filt.innerHTML = `<option value="">All Categories</option>`;
+
+    adminCats.forEach(c => {
+      filt.innerHTML += `
+        <option value="${c.id}">
+          ${escHtml(c.name)}
+        </option>
+      `;
+    });
+
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+// ── BOOKS TABLE ──
+const bookSearch   = () => document.getElementById('book-search').value.trim();
+const bookCatFilt  = () => document.getElementById('book-cat-filter').value;
+
+async function loadBookTable(pg = bookPage) {
+  bookPage = pg;
+  const tbody = document.getElementById('book-tbody');
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading…</td></tr>`;
+  let url = `/api/admin/books?page=${bookPage}&size=8&sortBy=id&sortDir=desc`;
+  if (bookSearch())  url += `&search=${encodeURIComponent(bookSearch())}`;
+  if (bookCatFilt()) url += `&categoryId=${bookCatFilt()}`;
+  try {
+    const data = await apiFetch(url);
+    bookTotal = data.totalPages || 1;
+    const books = data.content || [];
+    if (!books.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">No books found.</td></tr>`;
+      renderPager('book-pager', bookPage, bookTotal, loadBookTable); return;
+    }
+    tbody.innerHTML = books.map(b => `
+      <tr>
+        <td>${b.coverUrl ? `<img class="tbl-cover" src="${escHtml(b.coverUrl)}" onerror="this.outerHTML='<div class=tbl-cover-ph>📖</div>'">` : '<div class="tbl-cover-ph">📖</div>'}</td>
+        <td><span class="text-ivory fw-700">${escHtml(b.title)}</span></td>
+        <td class="text-muted">${escHtml(b.author)}</td>
+        <td>
+        ${
+            (b.categories && b.categories.length)
+                    ? b.categories.map(c =>
+                            `<span class="badge badge-gold">${escHtml(c.name)}</span>`
+                    ).join(' ')
+                    : '<span class="text-muted">—</span>'
+         }
+        </td>
+        <td class="text-gold fw-700">${formatPrice(b.price)}</td>
+        <td>
+          <div class="d-flex gap-1">
+            <button class="btn btn-ghost btn-sm" onclick="openEditBook(${b.id})">✏️ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteBook(${b.id}, '${escHtml(b.title).replace(/'/g,"\\'")}')">🗑️</button>
+          </div>
+        </td>
+      </tr>`).join('');
+    renderPager('book-pager', bookPage, bookTotal, loadBookTable);
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="6" class="text-danger" style="padding:1.5rem">${escHtml(e.message)}</td></tr>`;
+  }
+}
+
+function openAddBook() {
+  editBookId = null;
+  document.getElementById('book-modal-title').textContent = 'Add Book';
+  document.getElementById('bm-title').value = '';
+  document.getElementById('bm-author').value = '';
+  document.getElementById('bm-price').value = '';
+  document.getElementById('bm-cover').value = '';
+  document.getElementById('bm-desc').value = '';
+  document.querySelectorAll('#bm-categories input')
+          .forEach(cb => cb.checked = false);
+  clearModalMsg('book-modal-msg');
+  openModal('book-modal-overlay');
+}
+
+async function openEditBook(id) {
+  editBookId = id;
+  document.getElementById('book-modal-title').textContent = 'Edit Book';
+  clearModalMsg('book-modal-msg');
+  openModal('book-modal-overlay');
+
+  try {
+    const b = await apiFetch(`/api/books/${id}`);
+
+    document.getElementById('bm-title').value  = b.title || '';
+    document.getElementById('bm-author').value = b.author || '';
+    document.getElementById('bm-price').value  = b.price || '';
+    document.getElementById('bm-cover').value  = b.coverUrl || '';
+    document.getElementById('bm-desc').value   = b.description || '';
+
+    // reset all checkboxes
+    document
+            .querySelectorAll('#bm-categories input')
+            .forEach(cb => cb.checked = false);
+
+    // check book categories
+    (b.categories || []).forEach(cat => {
+      const cb = document.querySelector(
+              `#bm-categories input[value="${cat.id}"]`
+      );
+      if (cb) cb.checked = true;
+    });
+
+  } catch(e) {
+    showModalMsg('book-modal-msg', e.message, 'error');
+  }
+}
+
+async function saveBook() {
+  const title       = document.getElementById('bm-title').value.trim();
+  const author      = document.getElementById('bm-author').value.trim();
+  const price       = parseFloat(document.getElementById('bm-price').value);
+  const coverURL    = document.getElementById('bm-cover').value.trim();
+  const description = document.getElementById('bm-desc').value.trim();
+
+  const categoryIds = [
+    ...document.querySelectorAll('#bm-categories input:checked')
+  ].map(cb => +cb.value);
+
+  clearModalMsg('book-modal-msg');
+
+  if (!title || !author || isNaN(price) || !description) {
+    showModalMsg(
+            'book-modal-msg',
+            'Title, author, price and description are required.',
+            'error'
+    );
+    return;
+  }
+
+  if (categoryIds.length === 0 || categoryIds.length > 3) {
+    showModalMsg(
+            'book-modal-msg',
+            'Select 1 to 3 categories.',
+            'error'
+    );
+    return;
+  }
+
+  const btn = document.getElementById('book-modal-save');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const payload = {
+    title,
+    author,
+    price,
+    description,
+    coverUrl: coverURL,
+    categoryIds
+  };
+
+  try {
+    if (editBookId) {
+      await apiPut(`/api/admin/books/${editBookId}`, payload);
+      toast('Book updated!', 'success');
+    } else {
+      await apiPost('/api/admin/books', payload);
+      toast('Book added!', 'success');
+    }
+
+    closeBookModal();
+    loadBookTable();
+
+  } catch (e) {
+    showModalMsg('book-modal-msg', e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save Book';
+  }
+}
+
+async function deleteBook(id, title) {
+  const ok = await showConfirm(
+          'Delete Book',
+          `Delete "${title}"? This cannot be undone.`
+  );
+  if (!ok) return;
+
+  try {
+    await apiDelete(`/api/admin/books/${id}`);
+    toast('Book deleted.', 'success');
+    loadBookTable();
+  } catch (e) {
+    toast(e.message, 'error');
+  }
+}
+
+// ── CATEGORIES TABLE ──
+async function loadCatTable(pg = catPage) {
+  catPage = pg;
+  const tbody = document.getElementById('cat-tbody');
+
+  tbody.innerHTML =
+          `<tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading…</td></tr>`;
+
+  const search = document.getElementById('cat-search').value.trim();
+
+  try {
+    const data = await apiFetch(`/api/admin/categories?page=0&size=500`);
+
+    let cats = data.content || [];
+
+    if (search) {
+      cats = cats.filter(c =>
+              c.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    catTotal = Math.ceil(cats.length / 10);
+    const start = catPage * 10;
+    const pageItems = cats.slice(start, start + 10);
+
+    if (!pageItems.length) {
+      tbody.innerHTML =
+              `<tr><td colspan="3" style="text-align:center;padding:2rem;color:var(--text-muted)">No categories found.</td></tr>`;
+      renderPager('cat-pager', catPage, catTotal, loadCatTable);
+      return;
+    }
+
+    tbody.innerHTML = pageItems.map(c => `
+      <tr>
+        <td class="text-muted" style="width:60px">#${c.id}</td>
+        <td><span class="cat-name-cell">${escHtml(c.name)}</span></td>
+        <td>
+          <div class="d-flex gap-1">
+            <button class="btn btn-ghost btn-sm"
+              onclick="openEditCat(${c.id},'${escHtml(c.name).replace(/'/g,"\\'")}')">
+              ✏️ Edit
+            </button>
+            <button class="btn btn-danger btn-sm"
+              onclick="deleteCat(${c.id},'${escHtml(c.name).replace(/'/g,"\\'")}')">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    renderPager('cat-pager', catPage, catTotal, loadCatTable);
+
+  } catch (e) {
+    tbody.innerHTML =
+            `<tr><td colspan="3" class="text-danger" style="padding:1.5rem">
+        ${escHtml(e.message)}
+      </td></tr>`;
+  }
+}
+function openAddCat() {
+  editCatId = null;
+  document.getElementById('cat-modal-title').textContent = 'Add Category';
+  document.getElementById('cat-name-input').value = '';
+  clearModalMsg('cat-modal-msg');
+  openModal('cat-modal-overlay');
+}
+function openEditCat(id, name) {
+  editCatId = id;
+  document.getElementById('cat-modal-title').textContent = 'Edit Category';
+  document.getElementById('cat-name-input').value = name;
+  clearModalMsg('cat-modal-msg');
+  openModal('cat-modal-overlay');
+}
+async function saveCat() {
+  const name = document.getElementById('cat-name-input').value.trim();
+  if (!name) { showModalMsg('cat-modal-msg', 'Category name is required.', 'error'); return; }
+  try {
+    if (editCatId) {
+      await apiPut(`/api/admin/categories/${editCatId}`, { name });
+      toast('Category updated!', 'success');
+    } else {
+      await apiPost('/api/admin/categories', { name });
+      toast('Category added!', 'success');
+    }
+    closeCatModal(); loadCatTable(); loadAdminCategories();
+  } catch(e) { showModalMsg('cat-modal-msg', e.message, 'error'); }
+}
+async function deleteCat(id, name) {
+  const ok = await showConfirm('Delete Category', `Delete "${name}"? Books in this category will lose their category.`);
+  if (!ok) return;
+  try {
+    await apiDelete(`/api/admin/categories/${id}`);
+    toast('Category deleted.', 'success'); loadCatTable(); loadAdminCategories();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── USERS TABLE ──
+async function loadUserTable(pg = userPage) {
+  userPage = pg;
+  const tbody = document.getElementById('user-tbody');
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading…</td></tr>`;
+  const search = document.getElementById('user-search').value.trim();
+  let url = `/api/admin/users?page=${userPage}&size=10&sortBy=id&sortDir=desc`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+  try {
+    const data = await apiFetch(url);
+    userTotal = data.totalPages || 1;
+    const users = data.content || [];
+    if (!users.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">No users found.</td></tr>`;
+      renderPager('user-pager', userPage, userTotal, loadUserTable); return;
+    }
+    tbody.innerHTML = users.map(u => {
+      const initials =
+              ((u.firstName?.[0] || '?') + (u.lastName?.[0] || '?')).toUpperCase();
+      return `
+        <tr>
+          <td>
+            <div class="d-flex align-center gap-1">
+              <span class="user-avatar">${escHtml(initials)}</span>
+              <span class="text-ivory">${escHtml(u.firstName)} ${escHtml(u.lastName)}</span>
+            </div>
+          </td>
+          <td class="text-muted">@${escHtml(u.username)}</td>
+          <td><span class="badge ${u.role==='admin'?'badge-gold':'badge-gray'}">${escHtml(u.role)}</span></td>
+          <td class="text-muted">${formatDate(u.createdAt)}</td>
+          <td>
+            <button class="toggle-btn ${u.active?'active':'inactive'}" onclick="toggleUser(${u.id}, ${u.active})">
+              ${u.active ? '✔ Active' : '✖ Inactive'}
+            </button>
+          </td>
+          <td>
+            <button class="btn btn-ghost btn-sm" onclick="openEditUser(${u.id})">✏️ Edit</button>
+          </td>
+        </tr>`;}).join('');
+    renderPager('user-pager', userPage, userTotal, loadUserTable);
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="6" class="text-danger" style="padding:1.5rem">${escHtml(e.message)}</td></tr>`;
+  }
+}
+
+function openAddUser() {
+  editUserId = null;
+  document.getElementById('user-modal-title').textContent = 'Add User';
+  ['um-firstname','um-lastname','um-username','um-password'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('um-role').value = 'user';
+  clearModalMsg('user-modal-msg');
+  openModal('user-modal-overlay');
+}
+
+async function openEditUser(id) {
+  editUserId = id;
+  document.getElementById('user-modal-title').textContent = 'Edit User';
+  document.getElementById('um-password').value = '';
+  clearModalMsg('user-modal-msg');
+  openModal('user-modal-overlay');
+  try {
+    // Grab from list (no single-user GET endpoint)
+    const data = await apiFetch(`/api/admin/users?page=0&size=200`);
+    const u = (data.content||[]).find(x => x.id === id);
+    if (u) {
+      document.getElementById('um-firstname').value = u.firstName || '';
+      document.getElementById('um-lastname').value  = u.lastName  || '';
+      document.getElementById('um-username').value  = u.username  || '';
+      document.getElementById('um-role').value      = u.role      || 'user';
+    }
+  } catch(e) { showModalMsg('user-modal-msg', e.message, 'error'); }
+}
+
+async function saveUser() {
+  const firstName = document.getElementById('um-firstname').value.trim();
+  const lastName  = document.getElementById('um-lastname').value.trim();
+  const username  = document.getElementById('um-username').value.trim();
+  const password  = document.getElementById('um-password').value;
+  const role      = document.getElementById('um-role').value;
+  clearModalMsg('user-modal-msg');
+
+  if (!firstName || !lastName || !username) {
+    showModalMsg('user-modal-msg', 'First name, last name and username are required.', 'error'); return;
+  }
+
+  try {
+    if (editUserId) {
+      const payload = { firstName, lastName, username, role };
+      if (password) payload.password = password;
+      await apiPut(`/api/admin/users/${editUserId}`, payload);
+      toast('User updated!', 'success');
+    } else {
+      if (!password) { showModalMsg('user-modal-msg', 'Password is required for new users.', 'error'); return; }
+      await apiPost('/api/admin/users', { firstName, lastName, username, password, role });
+      toast('User created!', 'success');
+    }
+    closeUserModal(); loadUserTable();
+  } catch(e) { showModalMsg('user-modal-msg', e.message, 'error'); }
+}
+
+async function toggleUser(id, currentActive) {
+  try {
+    const res = await apiPatch(`/api/admin/users/${id}/toggle-active`);
+    toast(`User ${res.active ? 'activated' : 'deactivated'}.`, 'success');
+    loadUserTable();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ── ORDERS TABLE ──
+async function loadOrderTable(pg = orderPage) {
+  orderPage = pg;
+  const tbody = document.getElementById('order-tbody');
+
+  tbody.innerHTML =
+          `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading…</td></tr>`;
+
+  const search = document.getElementById('order-search').value.trim();
+
+  let url = `/api/admin/orders?page=${orderPage}&size=10`;
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+
+  try {
+    const data = await apiFetch(url);
+    orderTotal = data.totalPages || 1;
+    const orders = data.content || [];
+
+    if (!orders.length) {
+      tbody.innerHTML =
+              `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">No orders found.</td></tr>`;
+      renderPager('order-pager', orderPage, orderTotal, loadOrderTable);
+      return;
+    }
+
+    let html = '';
+
+    orders.forEach(o => {
+      html += `
+        <tr>
+          <td><span class="text-gold fw-700">#${o.orderId}</span></td>
+          <td class="text-ivory">@${escHtml(o.username || '—')}</td>
+          <td class="text-muted">${formatDateTime(o.orderDate)}</td>
+          <td><span class="text-gold fw-700">${formatPrice(o.totalPrice)}</span></td>
+          <td>
+            <span class="badge badge-gray">
+              ${(o.items || []).length} item${(o.items || []).length !== 1 ? 's' : ''}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-ghost btn-sm"
+              onclick="toggleOrderRow(${o.orderId})">
+              ▾ Details
+            </button>
+          </td>
+        </tr>
+
+        <tr class="order-expand-row" id="expand-${o.orderId}">
+          <td colspan="6">
+            <div class="order-expand-inner">
+              ${(o.items || []).map(i => `
+                <div class="mini-item">
+                  ${i.coverUrl
+              ? `<img class="tbl-cover"
+                            src="${escHtml(i.coverUrl)}"
+                            style="width:28px;height:36px"
+                            onerror="this.style.display='none'">`
+              : '<span>📖</span>'
+      }
+                  <span class="text-ivory">${escHtml(i.title)}</span>
+                  <span class="text-muted">× ${i.quantity}</span>
+                  <span class="text-gold">${formatPrice(i.price)}</span>
+                </div>
+              `).join('')}
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = html;
+    renderPager('order-pager', orderPage, orderTotal, loadOrderTable);
+
+  } catch (e) {
+    tbody.innerHTML =
+            `<tr><td colspan="6" class="text-danger" style="padding:1.5rem">
+        ${escHtml(e.message)}
+      </td></tr>`;
+  }
+}
+
+function toggleOrderRow(id) {
+  const row = document.getElementById(`expand-${id}`);
+  if (row) row.classList.toggle('open');
+}
+
+// ── PAGER ──
+function renderPager(containerId, curPage, total, loadFn) {
+  const el = document.getElementById(containerId);
+  if (total <= 1) { el.innerHTML = ''; return; }
+
+  let h = '';
+
+  h += `<button class="page-btn" ${curPage===0?'disabled':''} data-p="${curPage-1}">‹</button>`;
+
+  const s = Math.max(0, curPage-2);
+  const e = Math.min(total-1, curPage+2);
+
+  for (let i = s; i <= e; i++) {
+    h += `<button class="page-btn ${i===curPage?'active':''}" data-p="${i}">${i+1}</button>`;
+  }
+
+  h += `<button class="page-btn" ${curPage>=total-1?'disabled':''} data-p="${curPage+1}">›</button>`;
+
+  el.innerHTML = h;
+
+  el.querySelectorAll('button').forEach(btn=>{
+    if(btn.disabled) return;
+    btn.onclick = () => loadFn(+btn.dataset.p);
+  });
+}
+</script>
+</body>
+</html>

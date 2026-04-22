@@ -1,0 +1,659 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BookHaven — Catalog</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="icon" href="data:,">
+    <style>
+      :root{
+        --bg:#0b0f1a;
+        --card:#111827;
+        --card-2:#0f172a;
+        --border:#1f2937;
+        --gold:#c9a84c;
+        --text:#e5e7eb;
+        --muted:#9ca3af;
+      }
+
+      body{
+        background:linear-gradient(180deg,#070b14 0%, #0b0f1a 100%);
+      }
+
+      #main-nav{margin-bottom:20px}
+
+      /* HERO */
+      .hero{
+        position:relative;
+        padding:80px 20px 60px;
+        text-align:center;
+        background:radial-gradient(circle at 50% 0%, rgba(201,168,76,.15), transparent 60%);
+      }
+
+      .hero h1{
+        font-size:48px;
+        font-weight:800;
+        color:var(--text);
+        margin-bottom:10px;
+      }
+
+      .hero p{
+        color:var(--muted);
+        margin-bottom:25px;
+      }
+
+      .hero-actions{
+        display:flex;
+        justify-content:center;
+        gap:12px;
+        flex-wrap:wrap;
+      }
+
+      /* FILTER BAR */
+      .filter-bar{
+        max-width:1200px;
+        margin:0 auto;
+        padding:20px;
+        display:flex;
+        gap:12px;
+        flex-wrap:wrap;
+      }
+
+      #search-input{
+        width:100%;
+      }
+
+      .cat-checkboxes{
+        width:100%;
+      }
+
+      .search-bar{
+        flex:1;
+        padding:12px 14px;
+        background:var(--card);
+        border:1px solid var(--border);
+        color:var(--text);
+        border-radius:8px;
+      }
+
+      select{
+        padding:12px 14px;
+        background:var(--card);
+        border:1px solid var(--border);
+        color:var(--text);
+        border-radius:8px;
+      }
+
+      /* GRID */
+      .book-grid{
+        max-width:1200px;
+        margin:0 auto;
+        padding:10px 20px 60px;
+        display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+        gap:20px;
+      }
+
+      .book-card{
+        background:linear-gradient(180deg,var(--card),var(--card-2));
+        border:1px solid var(--border);
+        border-radius:14px;
+        overflow:hidden;
+        transition:.2s ease;
+        cursor:pointer;
+      }
+
+      .book-card:hover{
+        transform:translateY(-6px);
+        box-shadow:0 10px 30px rgba(0,0,0,.4);
+        border-color:rgba(201,168,76,.4);
+      }
+
+      .book-cover{
+        width:100%;
+        height:280px;
+        object-fit:cover;
+        background:#020617;
+      }
+
+      .book-info{
+        padding:14px;
+      }
+
+      .book-cat-tag{
+        font-size:11px;
+        color:var(--gold);
+        margin-bottom:6px;
+        text-transform:uppercase;
+        letter-spacing:.08em;
+      }
+
+      .book-title{
+        font-size:15px;
+        font-weight:700;
+        color:var(--text);
+        margin-bottom:3px;
+      }
+
+      .book-author{
+        font-size:13px;
+        color:var(--muted);
+        margin-bottom:8px;
+      }
+
+      .book-price{
+        font-size:15px;
+        color:var(--gold);
+        font-weight:700;
+      }
+
+      /* RESULTS */
+      #results-count{
+        max-width:1200px;
+        margin:0 auto;
+        padding:0 20px 10px;
+        color:var(--muted);
+      }
+
+      /* PAGINATION */
+      #pagination{
+        display:flex;
+        justify-content:center;
+        gap:8px;
+        padding-bottom:50px;
+      }
+
+      #pagination button{
+        background:var(--card);
+        border:1px solid var(--border);
+        color:var(--text);
+        padding:8px 12px;
+        border-radius:6px;
+        cursor:pointer;
+      }
+
+      #pagination button:hover{
+        border-color:var(--gold);
+      }
+
+      /* MODAL */
+      .modal-overlay{
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.75);
+        display:none;
+        align-items:center;
+        justify-content:center;
+        z-index:999;
+      }
+
+      .modal-overlay.open{
+        display:flex;
+      }
+
+      .modal{
+        background:var(--card);
+        border-radius:14px;
+        border:1px solid var(--border);
+        width:720px;
+        max-width:95%;
+        overflow:hidden;
+      }
+
+      .book-modal-inner{
+        display:flex;
+      }
+
+      .book-modal-cover img{
+        width:260px;
+        height:360px;
+        object-fit:cover;
+      }
+
+      .book-modal-body{
+        padding:20px;
+        flex:1;
+        display:flex;
+        flex-direction:column;
+      }
+
+      .book-modal-actions{
+        margin-top:auto;
+        display:flex;
+        gap:10px;
+        align-items:center;
+      }
+
+      .book-modal-stock{
+        color:var(--gold);
+        font-weight:600;
+        margin-top:8px;
+      }
+
+      .book-modal-title{
+        font-size:22px;
+        font-weight:700;
+        color:var(--text);
+      }
+
+      .book-modal-author{
+        color:var(--muted);
+        margin-bottom:10px;
+      }
+
+      .book-modal-desc{
+        color:var(--text);
+        margin:10px 0;
+      }
+
+      .book-modal-price{
+        font-size:22px;
+        color:var(--gold);
+        font-weight:700;
+      }
+
+      .qty-stepper{
+        display:inline-flex;
+        align-items:center;
+        border:1px solid var(--border);
+        border-radius:8px;
+        overflow:hidden;
+        margin:12px 0;
+      }
+
+      .qty-stepper button{
+        width:40px;
+        height:40px;
+        border:none;
+        background:var(--card);
+        color:var(--text);
+        font-size:18px;
+        cursor:pointer;
+      }
+
+      .qty-stepper button:hover{
+        background:rgba(201,168,76,.15);
+      }
+
+      .qty-stepper span{
+        width:50px;
+        text-align:center;
+        font-weight:600;
+        color:var(--text);
+      }
+
+      .btn{
+        padding:12px 18px;
+        border-radius:8px;
+        text-decoration:none;
+        font-weight:600;
+      }
+
+      .btn-primary{
+        background:var(--gold);
+        color:black;
+      }
+
+      .btn-secondary{
+        border:1px solid var(--border);
+        color:var(--text);
+      }
+
+      .cat-checkboxes{
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
+        align-items:center;
+        flex: 1;
+      }
+
+      .cat-checkbox{
+        display:flex;
+        align-items:center;
+        gap:6px;
+        background:var(--card);
+        border:1px solid var(--border);
+        padding:8px 10px;
+        border-radius:8px;
+        cursor:pointer;
+        color:var(--text);
+        font-size:13px;
+      }
+
+      .cat-checkbox input{
+        accent-color:var(--gold);
+        cursor:pointer;
+      }
+
+      .cat-checkbox:hover{
+        border-color:var(--gold);
+      }
+    </style>
+  </head>
+
+  <body>
+
+  <nav class="nav" id="main-nav"></nav>
+  <div id="toast-container"></div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="book-modal-overlay">
+    <div class="modal">
+      <div class="book-modal-inner" id="book-modal-inner"></div>
+    </div>
+  </div>
+
+  <section class="hero">
+    <h1>Discover Your Next Read</h1>
+    <p>Browse our premium collection of books</p>
+
+    <div class="hero-actions">
+      <button class="btn btn-primary"
+              onclick="document.querySelector('.filter-bar').scrollIntoView({behavior:'smooth'})">
+        Browse Books
+      </button>
+
+<!--      <a id="create-account-btn" class="btn btn-secondary" href="login.html">-->
+<!--        Create Account-->
+<!--      </a>-->
+    </div>
+  </section>
+
+  <div class="filter-bar">
+    <input id="search-input" class="search-bar"
+           placeholder="Search books..."
+           oninput="onSearch()" />
+
+    <div id="cat-checkboxes" class="cat-checkboxes"></div>
+  </div>
+
+  <div id="results-count"></div>
+  <div class="book-grid" id="book-grid"></div>
+  <div id="pagination"></div>
+
+  <script src="js/api.js"></script>
+
+  <script>
+    let page = 0
+    let totalPages = 0
+    let totalElements = 0
+    let q = ''
+    let catIds = []
+
+    let modalQty = 1
+    let currentBook = null
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // 👑 admin should not stay in catalog
+      if (Auth.isLoggedIn() && Auth.isAdmin()) {
+        window.location.href = "admin.html"
+        return
+      }
+
+      renderNav('catalog')
+
+      // hide create account if logged in
+      if (Auth.isLoggedIn()) {
+        const btn = document.getElementById("create-account-btn")
+        if (btn) btn.style.display = "none"
+      }
+
+      loadCategories()
+      loadBooks()
+    })
+
+    function onSearch(){
+      page=0
+      q=document.getElementById("search-input").value
+      loadBooks()
+    }
+
+    async function loadBooks(){
+      let url=`/api/books?page=${page}&size=16`
+      if(q) url+=`&q=${encodeURIComponent(q)}`
+      if(catIds.length){
+        catIds.forEach(id=>{
+          url+=`&categoryId=${id}`
+        })
+      }
+
+      const data=await apiFetch(url) || {}
+
+      const books=data.content||[]
+      totalPages=data.totalPages||0
+      totalElements=data.totalElements||0
+
+      renderGrid(books)
+      renderPager()
+
+      document.getElementById("results-count").textContent=
+              totalElements+" books found"
+    }
+
+    // ── ADMIN CATEGORIES (for dropdowns) ──
+    async function loadCategories(){
+      const wrap = document.getElementById("cat-checkboxes")
+
+      try{
+        const data = await apiFetch("/api/categories?page=0&size=100")
+
+        const cats = Array.isArray(data)
+                ? data
+                : (data?.content || [])
+
+        renderCategoryCheckboxes(cats)
+
+      }catch(e){
+
+        /* fallback — load ALL books then extract categories */
+        try{
+          const data = await apiFetch("/api/books?page=0&size=100")
+
+          const map = new Map()
+
+          ;(data.content || []).forEach(b=>{
+            if(b.categories){
+              b.categories.forEach(c=>{
+                map.set(c.id, c)
+              })
+            }
+          })
+
+          const cats = [...map.values()]
+
+          if(cats.length){
+            renderCategoryCheckboxes(cats)
+          }else{
+            wrap.innerHTML = `
+          <div style="color:var(--muted);font-size:13px">
+            No categories available
+          </div>
+        `
+          }
+
+        }catch(err){
+          wrap.innerHTML = `
+        <div style="color:var(--muted);font-size:13px">
+          Categories unavailable
+        </div>
+      `
+        }
+      }
+    }
+
+    function renderCategoryCheckboxes(cats){
+      const wrap = document.getElementById("cat-checkboxes")
+
+      wrap.innerHTML = `
+<label class="cat-checkbox">
+  <input type="checkbox" value="" onchange="clearCats()">
+  All
+</label>
+` + cats.map(c=>`
+<label class="cat-checkbox">
+  <input type="checkbox"
+         value="${c.id}"
+         onchange="onCatChange()">
+  ${c.name}
+</label>
+`).join("")
+    }
+
+    function clearCats(){
+      document
+              .querySelectorAll("#cat-checkboxes input:not([value=''])")
+              .forEach(cb=>cb.checked=false)
+
+      catIds=[]
+      loadBooks()
+    }
+
+    function onCatChange(){
+      page = 0
+
+      catIds = [...document.querySelectorAll(
+              "#cat-checkboxes input:checked"
+      )]
+              .map(cb => cb.value)
+              .filter(v => v !== "")   // ← ignore "All"
+
+      loadBooks()
+    }
+
+    function renderGrid(books){
+      const grid=document.getElementById("book-grid")
+
+      grid.innerHTML=books.map(book=>{
+
+        const cats=(book.categories||[])
+                .map(c=>c.name)
+                .join(", ")
+
+        const cover=book.coverUrl
+                ? `<img class="book-cover" src="${book.coverUrl}" alt="${book.title}">`
+                : `<div class="book-cover"></div>`
+
+        return `
+  <div class="book-card" onclick="openBook(${book.id})">
+  ${cover}
+  <div class="book-info">
+  <div class="book-cat-tag">${cats}</div>
+  <div class="book-title">${book.title}</div>
+  <div class="book-author">${book.author}</div>
+  <div class="book-price">${formatPrice(book.price)}</div>
+  </div>
+  </div>
+  `
+      }).join("")
+    }
+
+    async function openBook(id){
+      modalQty = 1
+
+      const overlay = document.getElementById("book-modal-overlay")
+      const inner = document.getElementById("book-modal-inner")
+
+      overlay.classList.add("open")
+      document.body.style.overflow = "hidden"
+
+      const b = await apiFetch(`/api/books/${id}`)
+      currentBook = b
+
+      inner.innerHTML = `
+      <div class="book-modal-cover">
+        <img src="${b.coverUrl}" alt="${b.title}">
+      </div>
+
+      <div class="book-modal-body">
+        <div class="book-modal-title">${b.title}</div>
+        <div class="book-modal-author">${b.author}</div>
+
+        <div class="book-modal-desc">
+          ${b.description || ""}
+        </div>
+
+        <div class="book-modal-price">
+          ${formatPrice(b.price)}
+        </div>
+
+       <!-- <div class="book-modal-stock">
+          📦 Only ${b.stock ?? 0} items left
+        </div> -->
+
+        <div class="book-modal-actions">
+          <div class="qty-stepper">
+            <button onclick="changeQty(-1)">−</button>
+            <span id="modal-qty">1</span>
+            <button onclick="changeQty(1)">+</button>
+          </div>
+
+          <button class="btn btn-primary" onclick="addToCart()">
+            Add to Cart
+          </button>
+
+          <button class="btn btn-secondary" onclick="closeBookModal()">
+            Close
+          </button>
+        </div>
+      </div>
+    `
+    }
+
+    function changeQty(n){
+      modalQty=Math.max(1,modalQty+n)
+      document.getElementById("modal-qty").textContent=modalQty
+    }
+
+    function closeBookModal(){
+      document.getElementById("book-modal-overlay").classList.remove("open")
+      document.body.style.overflow=""
+    }
+
+    async function addToCart(){
+      if(!Auth.isLoggedIn()){
+        window.location="login.html"
+        return
+      }
+
+      await apiPost("/api/cart/items",{
+        bookId:currentBook.id,
+        quantity:modalQty
+      })
+
+      loadCartBadge()   // ← ADD THIS LINE
+
+      toast("Added to cart","success")
+      closeBookModal()
+    }
+
+    function renderPager(){
+      const el=document.getElementById("pagination")
+
+      if(totalPages<=1){
+        el.innerHTML=""
+        return
+      }
+
+      let html=""
+
+      for(let i=0;i<totalPages;i++){
+        html+=`
+  <button onclick="goPage(${i})">
+  ${i+1}
+  </button>
+  `
+      }
+
+      el.innerHTML=html
+    }
+
+    function goPage(p){
+      page=p
+      loadBooks()
+    }
+  </script>
+
+  </body>
+  </html>
