@@ -149,12 +149,10 @@ public class AdminController {
     // ================= CATEGORIES =================
 
     @GetMapping("/categories")
-    public Page<Category> getAllCategories(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-        PageRequest pageable = PageRequest.of(page, size, Sort.by("name").ascending());
-        return categoryRepository.findAll(pageable);
+    public List<Category> getAllCategories() {
+        return categoryRepository.findAll(
+                Sort.by("name").ascending()
+        );
     }
 
     @PostMapping("/categories")
@@ -340,5 +338,17 @@ public class AdminController {
                     order.getUser().getUsername()
             );
         });
+    }
+
+    // ================= DASHBOARD STATS =================
+
+    @GetMapping("/stats")
+    public Map<String, Long> getDashboardStats() {
+        return Map.of(
+                "books", bookRepository.count(),
+                "categories", categoryRepository.count(),
+                "users", userRepository.count(),
+                "orders", orderRepository.count()
+        );
     }
 }

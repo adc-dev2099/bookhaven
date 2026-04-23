@@ -64,10 +64,6 @@
         width:100%;
       }
 
-      .cat-checkboxes{
-        width:100%;
-      }
-
       .search-bar{
         flex:1;
         padding:12px 14px;
@@ -300,25 +296,17 @@
         color:var(--text);
       }
 
-      .cat-checkboxes{
-        display:flex;
-        flex-wrap:wrap;
-        gap:8px;
-        align-items:center;
-        flex: 1;
-      }
-
       .cat-checkbox{
         display:flex;
         align-items:center;
-        gap:6px;
-        background:var(--card);
-        border:1px solid var(--border);
-        padding:8px 10px;
-        border-radius:8px;
+        gap:8px;
+        background:transparent;
+        border:none;
+        padding:4px 0;
+        border-radius:0;
         cursor:pointer;
         color:var(--text);
-        font-size:13px;
+        font-size:14px;
       }
 
       .cat-checkbox input{
@@ -327,7 +315,52 @@
       }
 
       .cat-checkbox:hover{
+        color:var(--gold);
+      }
+
+      .filter-dropdown{
+        position:relative;
+      }
+
+      .filter-toggle{
+        background:var(--card);
+        border:1px solid var(--border);
+        color:var(--text);
+        padding:12px 14px;
+        border-radius:8px;
+        cursor:pointer;
+      }
+
+      .filter-toggle:hover{
         border-color:var(--gold);
+      }
+
+      .dropdown-menu{
+        position:absolute;
+        top:110%;
+        right:0;
+        width:600px;
+
+        background:var(--card-2);
+        border:1px solid var(--border);
+        border-radius:12px;
+        padding:16px;
+
+        display:none;
+        z-index:999;
+
+        max-height:260px;
+        overflow-y:auto;   /* SCROLL HERE */
+      }
+
+      .dropdown-menu.show{
+        display:block;
+      }
+
+      .cat-checkboxes{
+        display:grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap:10px 30px;
       }
     </style>
   </head>
@@ -361,11 +394,21 @@
   </section>
 
   <div class="filter-bar">
+
     <input id="search-input" class="search-bar"
            placeholder="Search books..."
            oninput="onSearch()" />
 
-    <div id="cat-checkboxes" class="cat-checkboxes"></div>
+    <div class="filter-dropdown">
+      <button class="filter-toggle" onclick="toggleFilters(event)">
+        Genres ▾
+      </button>
+
+      <div class="dropdown-menu" id="dropdown-menu">
+        <div id="cat-checkboxes" class="cat-checkboxes"></div>
+      </div>
+    </div>
+
   </div>
 
   <div id="results-count"></div>
@@ -432,73 +475,41 @@
               totalElements+" books found"
     }
 
-    // ── ADMIN CATEGORIES (for dropdowns) ──
+    // ── ADMIN CATEGORIES (for dropdowns) ──//
     async function loadCategories(){
       const wrap = document.getElementById("cat-checkboxes")
 
       try{
-        const data = await apiFetch("/api/categories?page=0&size=100")
-
-        const cats = Array.isArray(data)
-                ? data
-                : (data?.content || [])
-
+        const cats = await apiFetch("/api/categories")
         renderCategoryCheckboxes(cats)
 
       }catch(e){
-
-        /* fallback — load ALL books then extract categories */
-        try{
-          const data = await apiFetch("/api/books?page=0&size=100")
-
-          const map = new Map()
-
-          ;(data.content || []).forEach(b=>{
-            if(b.categories){
-              b.categories.forEach(c=>{
-                map.set(c.id, c)
-              })
-            }
-          })
-
-          const cats = [...map.values()]
-
-          if(cats.length){
-            renderCategoryCheckboxes(cats)
-          }else{
-            wrap.innerHTML = `
-          <div style="color:var(--muted);font-size:13px">
-            No categories available
-          </div>
-        `
-          }
-
-        }catch(err){
-          wrap.innerHTML = `
-        <div style="color:var(--muted);font-size:13px">
-          Categories unavailable
-        </div>
-      `
-        }
+        wrap.innerHTML = `
+      <div style="color:var(--muted);font-size:13px">
+        Categories unavailable
+      </div>
+    `
       }
     }
 
     function renderCategoryCheckboxes(cats){
       const wrap = document.getElementById("cat-checkboxes")
 
+      cats.sort((a, b) => a.name.localeCompare(b.name))
+
       wrap.innerHTML = `
-<label class="cat-checkbox">
-  <input type="checkbox" value="" onchange="clearCats()">
-  All
-</label>
-` + cats.map(c=>`
-<label class="cat-checkbox">
-  <input type="checkbox"
-         value="${c.id}"
-         onchange="onCatChange()">
-  ${c.name}
-</label>
-`).join("")
+        <label class="cat-checkbox">
+          <input type="checkbox" value="" onchange="clearCats()">
+          All
+        </label>
+        ` + cats.map(c=>`
+        <label class="cat-checkbox">
+          <input type="checkbox"
+                 value="${c.id}"
+                 onchange="onCatChange()">
+          ${c.name}
+        </label>
+        `).join("")
     }
 
     function clearCats(){
@@ -653,6 +664,23 @@
       page=p
       loadBooks()
     }
+
+    function toggleFilters(e){
+      e.stopPropagation()
+      document
+              .getElementById("dropdown-menu")
+              .classList
+              .toggle("show")
+    }
+
+    document.addEventListener("click", function(e){
+      const dropdown = document.querySelector(".filter-dropdown")
+      const menu = document.getElementById("dropdown-menu")
+
+      if(!dropdown.contains(e.target)){
+        menu.classList.remove("show")
+      }
+    })
   </script>
 
   </body>

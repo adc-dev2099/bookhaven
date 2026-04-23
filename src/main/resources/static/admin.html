@@ -550,26 +550,32 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 // ── OVERVIEW ──
 async function loadOverview() {
   try {
-    const [books, cats, users, orders] = await Promise.all([
-      apiFetch('/api/admin/books?page=0&size=1'),
-      apiFetch('/api/admin/categories?page=0&size=1'),
-      apiFetch('/api/admin/users?page=0&size=1'),
-      apiFetch('/api/admin/orders?page=0&size=1'),
-    ]);
-    document.getElementById('stat-books').textContent  = books.totalElements  ?? '—';
-    document.getElementById('stat-cats').textContent   = cats.totalElements   ?? '—';
-    document.getElementById('stat-users').textContent  = users.totalElements  ?? '—';
-    document.getElementById('stat-orders').textContent = orders.totalElements ?? '—';
-  } catch(e) { toast(e.message, 'error'); }
+    const stats = await apiFetch('/api/admin/stats');
+
+    document.getElementById('stat-books').textContent  = stats.books ?? '—';
+    document.getElementById('stat-cats').textContent   = stats.categories ?? '—';
+    document.getElementById('stat-users').textContent  = stats.users ?? '—';
+    document.getElementById('stat-orders').textContent = stats.orders ?? '—';
+
+  } catch(e) {
+    toast(e.message, 'error');
+  }
 }
 
 // ── ADMIN CATEGORIES (for book modal + filters) ──
 async function loadAdminCategories() {
   try {
-    const data = await apiFetch("/api/admin/categories?page=0&size=100");
-    adminCats = data.content || [];
+    const data = await apiFetch("/api/admin/categories");
 
-    // ── BOOK MODAL CHECKBOXES ──
+    // backend returns LIST not PAGE
+    adminCats = data || [];
+
+    // sort A-Z
+    adminCats.sort((a, b) =>
+            a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+    );
+
+    // checkboxes
     const wrap = document.getElementById('bm-categories');
     wrap.innerHTML = '';
 
@@ -582,7 +588,7 @@ async function loadAdminCategories() {
       `;
     });
 
-    // ── BOOK FILTER DROPDOWN ──
+    // filter dropdown
     const filt = document.getElementById('book-cat-filter');
     filt.innerHTML = `<option value="">All Categories</option>`;
 
@@ -594,7 +600,7 @@ async function loadAdminCategories() {
       `;
     });
 
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 }
@@ -784,9 +790,9 @@ async function loadCatTable(pg = catPage) {
   const search = document.getElementById('cat-search').value.trim();
 
   try {
-    const data = await apiFetch(`/api/admin/categories?page=0&size=500`);
+    const catsAll = await apiFetch(`/api/admin/categories`);
 
-    let cats = data.content || [];
+    let cats = catsAll || [];
 
     if (search) {
       cats = cats.filter(c =>
