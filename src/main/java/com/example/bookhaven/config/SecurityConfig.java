@@ -40,12 +40,15 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/favicon.ico",
-                                "/**/*.html",
-                                "/**/*.css",
-                                "/**/*.js",
-                                "/**/*.png",
-                                "/**/*.jpg",
-                                "/**/*.svg"
+                                "/*.html",
+                                "/*.css",
+                                "/*.js",
+                                "/*.png",
+                                "/*.jpg",
+                                "/*.svg",
+                                "/css/**",
+                                "/js/**",
+                                "/images/**"
                         ).permitAll()
 
                         // public auth

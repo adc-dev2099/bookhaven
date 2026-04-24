@@ -39,7 +39,16 @@
       font-family: 'Cormorant Garamond', serif;
     }
 
-    .order-items { padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; }
+    .order-items{
+      display:none;
+      padding:1rem 1.5rem;
+      flex-direction:column;
+      gap:0.8rem;
+    }
+
+    .order-items.open{
+      display:flex;
+    }
 
     .order-item {
       display: flex; align-items: center; gap: 1rem;
@@ -62,6 +71,24 @@
     }
     .order-item-detail { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; }
     .order-item-price { font-size: 0.9rem; font-weight: 600; color: var(--gold); flex-shrink: 0; }
+
+    .order-right{
+      display:flex;
+      align-items:center;
+      gap:16px;
+    }
+
+    .order-toggle{
+      cursor:pointer;
+    }
+
+    .order-toggle .caret{
+      transition:.2s ease;
+    }
+
+    .order-toggle.open .caret{
+      transform:rotate(180deg);
+    }
   </style>
 </head>
 <body>
@@ -109,13 +136,19 @@
 
       container.innerHTML = orders.map(o => `
         <div class="order-card">
-          <div class="order-header">
-            <div class="order-meta">
-              <div class="order-id">Order #${o.orderId}</div>
-              <div class="order-date">${formatDateTime(o.orderDate)}</div>
-            </div>
-            <div class="order-total">${formatPrice(o.totalPrice)}</div>
-          </div>
+<div class="order-header">
+  <div class="order-meta">
+    <div class="order-id">Order #${o.orderId}</div>
+    <div class="order-date">${formatDateTime(o.orderDate)}</div>
+  </div>
+
+  <div class="order-right">
+    <div class="order-total">${formatPrice(o.totalPrice)}</div>
+    <button class="btn btn-secondary btn-sm order-toggle">
+      <span class="caret">▾</span> Details
+    </button>
+  </div>
+</div>
           <div class="order-items">
             ${(o.items || []).map(item => `
               <div class="order-item">
@@ -140,6 +173,18 @@
         </div>`;
     }
   }
+
+  document.addEventListener("click", function(e){
+    const btn = e.target.closest(".order-toggle");
+    if(!btn) return;
+
+    btn.classList.toggle("open");
+
+    const card = btn.closest(".order-card");
+    const items = card.querySelector(".order-items");
+
+    items.classList.toggle("open");
+  });
 </script>
 </body>
 </html>

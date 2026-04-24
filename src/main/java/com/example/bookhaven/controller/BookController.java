@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -26,7 +27,11 @@ public class BookController {
             @RequestParam(required = false) String q,
             @RequestParam(required = false) Long categoryId
     ) {
-        PageRequest pageable = PageRequest.of(page, size);
+        PageRequest pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("title").ascending()
+        );
 
         if (q != null && !q.isBlank()) {
             // search with optional category filter

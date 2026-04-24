@@ -56,35 +56,33 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir
+            @RequestParam(required = false) Long categoryId
     ) {
-        Sort sort = sortDir.equalsIgnoreCase("asc")
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
-
-        PageRequest pageable = PageRequest.of(page, size, sort);
+        PageRequest pageable = PageRequest.of(page, size);
 
         // SEARCH + CATEGORY
         if (search != null && !search.isBlank() && categoryId != null) {
             return bookRepository.searchByCategoryAndText(categoryId, search, pageable);
         }
 
-        // SEARCH ONLY
+        // SEARCH ONLY (A-Z)
         if (search != null && !search.isBlank()) {
             return bookRepository
-                    .findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(
+                    .findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderByTitleAsc(
                             search, search, pageable
                     );
         }
 
-        // CATEGORY ONLY
+        // CATEGORY ONLY (A-Z)
         if (categoryId != null) {
-            return bookRepository.findDistinctByCategories_Id(categoryId, pageable);
+            return bookRepository
+                    .findDistinctByCategories_IdOrderByTitleAsc(categoryId, pageable);
         }
 
-        return bookRepository.findAll(pageable);
+        // ALL (A-Z)
+        return bookRepository.findAll(
+                PageRequest.of(page, size, Sort.by("title").ascending())
+        );
     }
 
     @PostMapping("/books")
@@ -106,7 +104,7 @@ public class AdminController {
         book.setAuthor(request.getAuthor());
         book.setPrice(request.getPrice());
         book.setDescription(request.getDescription());
-        book.setCoverUrl(request.getCoverURL());
+        book.setCoverUrl(request.getCoverUrl());
 
         book.setCategories(categories);
 
@@ -132,6 +130,13 @@ public class AdminController {
 
         List<Category> categories =
                 categoryRepository.findAllById(request.getCategoryIds());
+
+        book.setTitle(request.getTitle());
+        book.setAuthor(request.getAuthor());
+        book.setPrice(request.getPrice());
+        book.setDescription(request.getDescription());
+        book.setCoverUrl(request.getCoverUrl()); // ✅ correct mapping
+        book.setCategories(categories);
 
         return ResponseEntity.ok(bookRepository.save(book));
     }

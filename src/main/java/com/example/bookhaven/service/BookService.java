@@ -29,6 +29,7 @@ public class BookService {
         return bookRepository.findById(id);
     }
 
+    // search query only
     public Page<Book> searchBooks(String query, Pageable pageable) {
         return bookRepository
                 .findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(
@@ -38,15 +39,24 @@ public class BookService {
                 );
     }
 
+    // category only
     public Page<Book> searchBooksByCategory(Long categoryId, Pageable pageable) {
-        return bookRepository.findDistinctByCategories_Id(categoryId, pageable);
+        return bookRepository
+                .findDistinctByCategories_Id(
+                        categoryId,
+                        pageable
+                );
     }
 
+    // search + category
     public Page<Book> searchBooks(String query, Long categoryId, Pageable pageable) {
 
         if (categoryId != null) {
             return bookRepository
-                    .findDistinctByCategories_Id(categoryId, pageable);
+                    .findDistinctByCategories_Id(
+                            categoryId,
+                            pageable
+                    );
         }
 
         return bookRepository

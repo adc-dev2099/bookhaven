@@ -160,17 +160,43 @@
         padding-bottom:50px;
       }
 
-      #pagination button{
+      #pagination{
+        display:flex;
+        justify-content:center;
+        gap:8px;
+        padding:40px 0 60px;
+      }
+
+      .page-btn{
+        min-width:42px;
+        height:42px;
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
         background:var(--card);
         border:1px solid var(--border);
         color:var(--text);
-        padding:8px 12px;
-        border-radius:6px;
+
+        border-radius:10px;
         cursor:pointer;
+        transition:.15s;
       }
 
-      #pagination button:hover{
+      .page-btn:hover{
         border-color:var(--gold);
+      }
+
+      .page-btn.active{
+        background:var(--gold);
+        color:black;
+        border-color:var(--gold);
+      }
+
+      .page-btn:disabled{
+        opacity:.4;
+        cursor:default;
       }
 
       /* MODAL */
@@ -640,29 +666,49 @@
     }
 
     function renderPager(){
-      const el=document.getElementById("pagination")
+      const el = document.getElementById("pagination")
 
-      if(totalPages<=1){
-        el.innerHTML=""
+      if(totalPages <= 1){
+        el.innerHTML = ""
         return
       }
 
-      let html=""
+      let html = ""
 
-      for(let i=0;i<totalPages;i++){
-        html+=`
-  <button onclick="goPage(${i})">
-  ${i+1}
-  </button>
-  `
+      html += `<button class="page-btn" ${page===0?'disabled':''}
+            onclick="goPage(${page-1})">‹</button>`
+
+      const start = Math.max(0, page - 2)
+      const end   = Math.min(totalPages - 1, page + 2)
+
+      for(let i = start; i <= end; i++){
+        html += `
+      <button class="page-btn ${i===page?'active':''}"
+              onclick="goPage(${i})">
+        ${i+1}
+      </button>
+    `
       }
 
-      el.innerHTML=html
+      html += `<button class="page-btn"
+            ${page>=totalPages-1?'disabled':''}
+            onclick="goPage(${page+1})">›</button>`
+
+      el.innerHTML = html
     }
 
     function goPage(p){
-      page=p
+      page = p
       loadBooks()
+
+      const yOffset = -180; // height of navbar
+      const element = document.getElementById("book-grid")
+      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset
+
+      window.scrollTo({
+        top: y,
+        behavior: "smooth"
+      })
     }
 
     function toggleFilters(e){

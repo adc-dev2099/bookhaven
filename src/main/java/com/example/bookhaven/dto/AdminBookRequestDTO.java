@@ -20,7 +20,7 @@ public class AdminBookRequestDTO {
     // CHANGE TO LIST
     private List<Long> categoryIds;
 
-    private String coverURL;
+    private String coverUrl;
 
 
 }

@@ -9,39 +9,47 @@ import org.springframework.data.repository.query.Param;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
+    // Search
     Page<Book> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(
             String title,
             String author,
             Pageable pageable
     );
 
+    // Search (A-Z)
+    Page<Book> findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderByTitleAsc(
+            String title,
+            String author,
+            Pageable pageable
+    );
+
+    // Filter by category
     Page<Book> findDistinctByCategories_Id(
             Long categoryId,
             Pageable pageable
     );
 
-    Page<Book> findDistinctByCategories_IdAndTitleContainingIgnoreCaseOrCategories_IdAndAuthorContainingIgnoreCase(
-            Long categoryId1,
-            String title,
-            Long categoryId2,
-            String author,
+    // Filter by category (A-Z)
+    Page<Book> findDistinctByCategories_IdOrderByTitleAsc(
+            Long categoryId,
             Pageable pageable
     );
 
-    boolean existsByCategories_Id(Long id);
-
     @Query("""
-SELECT DISTINCT b FROM Book b
-JOIN b.categories c
-WHERE c.id = :categoryId
-AND (
-LOWER(b.title) LIKE LOWER(CONCAT('%', :search, '%'))
-OR LOWER(b.author) LIKE LOWER(CONCAT('%', :search, '%'))
-)
-""")
+        SELECT DISTINCT b FROM Book b
+        JOIN b.categories c
+        WHERE c.id = :categoryId
+        AND (
+            LOWER(b.title) LIKE LOWER(CONCAT('%', :search, '%'))
+            OR LOWER(b.author) LIKE LOWER(CONCAT('%', :search, '%'))
+        )
+        ORDER BY b.title ASC
+    """)
     Page<Book> searchByCategoryAndText(
             @Param("categoryId") Long categoryId,
             @Param("search") String search,
             Pageable pageable
     );
+
+    boolean existsByCategories_Id(Long id);
 }
