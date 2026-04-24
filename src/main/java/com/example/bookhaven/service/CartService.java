@@ -55,7 +55,7 @@ public class CartService {
             cartItem.setBook(book);
             cartItem.setQuantity(quantity);
 
-            cart.getCartItems().add(cartItem);
+            cartItemsRepository.save(cartItem);
         }
 
         recalculateCartTotal(cart);
