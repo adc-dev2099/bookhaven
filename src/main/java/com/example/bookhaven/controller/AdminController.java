@@ -13,6 +13,7 @@ import com.example.bookhaven.dto.AdminBookRequestDTO;
 import com.example.bookhaven.dto.RegisterRequestDTO;
 import com.example.bookhaven.dto.OrderResponseDTO;
 import com.example.bookhaven.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -61,12 +62,10 @@ public class AdminController {
     ) {
         PageRequest pageable = PageRequest.of(page, size);
 
-        // SEARCH + CATEGORY
         if (search != null && !search.isBlank() && categoryId != null) {
             return bookRepository.searchByCategoryAndText(categoryId, search, pageable);
         }
 
-        // SEARCH ONLY (A-Z)
         if (search != null && !search.isBlank()) {
             return bookRepository
                     .findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCaseOrderByTitleAsc(
@@ -74,20 +73,19 @@ public class AdminController {
                     );
         }
 
-        // CATEGORY ONLY (A-Z)
         if (categoryId != null) {
             return bookRepository
                     .findDistinctByCategories_IdOrderByTitleAsc(categoryId, pageable);
         }
 
-        // ALL (A-Z)
         return bookRepository.findAll(
                 PageRequest.of(page, size, Sort.by("title").ascending())
         );
     }
 
+    // ================= ADD BOOK =================
     @PostMapping("/books")
-    public ResponseEntity<?> addBook(@RequestBody AdminBookRequestDTO request) {
+    public ResponseEntity<?> addBook(@Valid @RequestBody AdminBookRequestDTO request) {
 
         if (request.getCategoryIds() == null ||
                 request.getCategoryIds().isEmpty() ||
@@ -103,19 +101,19 @@ public class AdminController {
         Book book = new Book();
         book.setTitle(request.getTitle());
         book.setAuthor(request.getAuthor());
-        book.setPrice(request.getPrice());
+        book.setPrice(request.getPrice()); // validated (no negative allowed)
         book.setDescription(request.getDescription());
         book.setCoverUrl(request.getCoverUrl());
-
         book.setCategories(categories);
 
         return ResponseEntity.ok(bookRepository.save(book));
     }
 
+    // ================= UPDATE BOOK =================
     @PutMapping("/books/{id}")
     public ResponseEntity<?> updateBook(
             @PathVariable Long id,
-            @RequestBody AdminBookRequestDTO request
+            @Valid @RequestBody AdminBookRequestDTO request
     ) {
 
         Book book = bookRepository.findById(id)
@@ -134,14 +132,15 @@ public class AdminController {
 
         book.setTitle(request.getTitle());
         book.setAuthor(request.getAuthor());
-        book.setPrice(request.getPrice());
+        book.setPrice(request.getPrice()); // validated
         book.setDescription(request.getDescription());
-        book.setCoverUrl(request.getCoverUrl()); // ✅ correct mapping
+        book.setCoverUrl(request.getCoverUrl());
         book.setCategories(categories);
 
         return ResponseEntity.ok(bookRepository.save(book));
     }
 
+    // ================= DELETE BOOK =================
     @DeleteMapping("/books/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable Long id) {
         if (!bookRepository.existsById(id)) {
@@ -156,9 +155,7 @@ public class AdminController {
 
     @GetMapping("/categories")
     public List<Category> getAllCategories() {
-        return categoryRepository.findAll(
-                Sort.by("name").ascending()
-        );
+        return categoryRepository.findAll(Sort.by("name").ascending());
     }
 
     @PostMapping("/categories")
@@ -197,8 +194,7 @@ public class AdminController {
                     .body(Map.of("message", "Category name cannot be empty."));
         }
 
-        if (categoryRepository
-                .findByNameIgnoreCase(name)
+        if (categoryRepository.findByNameIgnoreCase(name)
                 .filter(c -> !c.getId().equals(id))
                 .isPresent()) {
             return ResponseEntity.badRequest()
