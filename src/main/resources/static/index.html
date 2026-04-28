@@ -6,15 +6,22 @@
     <title>BookHaven — Catalog</title>
     <link rel="stylesheet" href="css/style.css" />
     <link rel="icon" href="data:,">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
       :root{
-        --bg:#0b0f1a;
-        --card:#111827;
-        --card-2:#0f172a;
-        --border:#1f2937;
-        --gold:#c9a84c;
-        --text:#e5e7eb;
-        --muted:#9ca3af;
+        /* BACKGROUND */
+        --bg:#0f0f14;
+        --card:#17171c;
+        --card-2:#14141a;
+        --border:#2a2a32;
+
+        /* MANGA ACCENT */
+        --gold:#ff2e63;
+        --gold-light:#ff4f7d;
+
+        /* TEXT */
+        --text:#f5f5f7;
+        --muted:#8b8b95;
       }
 
       body{
@@ -28,7 +35,7 @@
         position:relative;
         padding:80px 20px 60px;
         text-align:center;
-        background:radial-gradient(circle at 50% 0%, rgba(201,168,76,.15), transparent 60%);
+        background:radial-gradient(circle at 50% 0%, rgba(255,46,99,.18), transparent 60%);
       }
 
       .hero h1{
@@ -36,6 +43,8 @@
         font-weight:800;
         color:var(--text);
         margin-bottom:10px;
+        font-family:'Bebas Neue', sans-serif;
+        letter-spacing:.5px;
       }
 
       .hero p{
@@ -103,7 +112,7 @@
       .book-card:hover{
         transform:translateY(-6px);
         box-shadow:0 10px 30px rgba(0,0,0,.4);
-        border-color:rgba(201,168,76,.4);
+        border-color:rgba(255,46,99,.4);
       }
 
       .book-cover{

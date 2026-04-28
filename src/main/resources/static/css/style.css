@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&display=swap');
 
 /* ═══════════════════════════════════════════════════
    BOOKHAVEN — SHARED STYLESHEET
@@ -7,33 +7,45 @@
 ═══════════════════════════════════════════════════ */
 
 :root {
-  --navy:       #0d1b2a;
-  --navy-mid:   #162234;
-  --navy-card:  #1a2a3a;
-  --navy-border:#253547;
-  --gold:       #c9a84c;
-  --gold-light: #e8c97a;
-  --gold-pale:  rgba(201,168,76,0.12);
-  --ivory:      #f5f0e8;
-  --ivory-dim:  #d8cfba;
-  --rust:       #c0392b;
-  --sage:       #2e7d5e;
-  --text:       #e8e0d0;
-  --text-muted: #8a9bb0;
-  --white:      #ffffff;
+  /* BACKGROUND */
+  --navy:        #0f0f14;
+  --navy-mid:    #14141a;
+  --navy-card:   #17171c;
+  --navy-border: #2a2a32;
 
-  --shadow-sm:  0 2px 12px rgba(0,0,0,0.3);
-  --shadow-md:  0 6px 30px rgba(0,0,0,0.45);
-  --shadow-lg:  0 16px 60px rgba(0,0,0,0.6);
-  --r:          6px;
-  --r-lg:       10px;
+  /* PRIMARY ACCENT (manga pink/red) */
+  --gold:        #ff2e63;
+  --gold-light:  #ff4f7d;
+  --gold-pale:   rgba(255,46,99,0.12);
+
+  /* SECONDARY ACCENT (optional highlight) */
+  --accent-2:    #08d9d6;
+
+  /* TEXT */
+  --ivory:       #f5f5f7;
+  --ivory-dim:   #b8b8c2;
+  --text:        #f5f5f7;
+  --text-muted:  #8b8b95;
+  --white:       #ffffff;
+
+  /* STATUS */
+  --rust:        #ff4d4f;
+  --sage:        #22c55e;
+
+  /* UI */
+  --shadow-sm: 0 2px 12px rgba(0,0,0,0.3);
+  --shadow-md: 0 6px 30px rgba(0,0,0,0.45);
+  --shadow-lg: 0 16px 60px rgba(0,0,0,0.6);
+
+  --r: 6px;
+  --r-lg: 10px;
 
   --nav-h: 66px;
 }
 
-:root {
+:root{
   --font-sans: 'Outfit', sans-serif;
-  --font-serif: 'Cormorant Garamond', serif;
+  --font-serif: 'Bebas Neue', sans-serif;
 }
 
 html, body {

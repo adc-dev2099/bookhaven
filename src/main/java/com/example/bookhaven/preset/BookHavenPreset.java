@@ -52,7 +52,7 @@ public class BookHavenPreset {
         seedDatabase();
     }
 
-//    @PostConstruct
+        @PostConstruct
     public void init() {
         reseedDatabase();
     }
@@ -73,7 +73,7 @@ public class BookHavenPreset {
         User user = new User();
         user.setFirstName("First");
         user.setLastName("Last");
-        user.setUsername("User");
+        user.setUsername("user");
         user.setPassword(passwordEncoder.encode("user1234"));
         user.setRole("user");
         user.setActive(true);
@@ -265,11 +265,11 @@ public class BookHavenPreset {
         books.add(new Book(null,"Kuroko Basketball","Tadatoshi Fujimaki",629.00,"Generation of miracles.","https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/2914835-11.jpg",List.of(sports, school, shonen),null,null));
         books.add(new Book(null,"Attack on Titan","Kaiu Shirai",649.00,"Escape orphanage.","https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/8205713-34.jpg",List.of(mystery, thriller, shonen),null,null));
 
-        books.add(new Book(null,"A Silent Voice","Yoshitoki Oima",599.00,"Bullying redemption.","https://comicvine.gamespot.com/a/uploads/scale_large/11139/111391600/8998180-7876198521-71iep.jpg",List.of(drama, romance, school),null,null));
+        books.add(new Book(null,"A Silent Voice","Yoshitoki Oima",599.00,"A Silent Voice follows Shoya Ishida, a former bully who seeks redemption after tormenting a deaf classmate in elementary school. When he reunites with Shoko Nishimiya, he tries to make amends and rebuild connections while confronting guilt, friendship, and forgiveness.","https://comicvine.gamespot.com/a/uploads/scale_large/11139/111391600/8998180-7876198521-71iep.jpg",List.of(drama, romance, school),null,null));
         books.add(new Book(null,"Super Psychic Policeman Chojo","Spike Chunsoft",599.00,"Killing school mystery.","https://comicvine.gamespot.com/a/uploads/scale_large/11154/111547112/10009432-7732256061-81eK2.jpg",List.of(thriller, mystery, school),null,null));
         books.add(new Book(null,"Kimetsu no Yaiba","Yoshikazu Yasuhiko",799.00,"Robot war.","https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/6448938-11.jpg",List.of(mecha, sciFi, action),null,null));
         books.add(new Book(null,"Bakuman","Tsugumi Ohba",589.00,"Supernatural slice life.","https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/2805948-08.jpg",List.of(supernatural, sliceOfLife, comedy),null,null));
-        books.add(new Book(null,"3D Kanojo, Real Girl: Shinsōban","Ichigo Takano",619.00,"Future romance drama.","https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/6927067-13.jpg",List.of(romance, drama, supernatural),null,null)); // Attack on Titan
+        books.add(new Book(null,"3D Kanojo, Real Girl: Shinsōban","Mao Nanami",619.00,"3D Kanojo: Real Girl follows Hikari Tsutsui, an introverted high schooler who prefers anime and games over real life. After unexpectedly dating the popular and misunderstood Iroha Igarashi, he begins to open up, learning about friendship, love, and personal growth.","https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/6927067-13.jpg",List.of(romance, drama, comedy),null,null));
 
         books.add(new Book(null,"Azumanga Daioh","Kazutaka Kodaka",689.00,"Cyberpunk criminals.","https://comicvine.gamespot.com/a/uploads/scale_large/0/3125/3596108-azu1.jpg",List.of(sciFi, action, thriller),null,null));
         books.add(new Book(null,"Katekyo Hitman Reborn!","HERO",609.00,"School romance life.","https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/3121020-41.jpg",List.of(romance, sliceOfLife, school),null,null)); // Lovely Complex
@@ -287,7 +287,7 @@ public class BookHavenPreset {
         books.add(new Book(null,"Insomniacs After School","Makoto Ojiro",599.00,"Students bond over insomnia.","https://comicvine.gamespot.com/a/uploads/scale_large/11139/111391600/8815109-3c571967-1286-4d54-8ab8-2678532963bd.jpeg",List.of(romance, sliceOfLife, school),null,null));
         books.add(new Book(null,"Dead Mount Death Play","Ryohgo Narita",659.00,"Necromancer reborn modern Tokyo.","https://comicvine.gamespot.com/a/uploads/scale_large/6/67663/6395985-01.jpg",List.of(isekai, supernatural, action),null,null));
         books.add(new Book(null,"Skip and Loafer","Misaki Takamatsu",609.00,"Country girl city school life.","https://comicvine.gamespot.com/a/uploads/scale_large/11161/111610434/8731775-4440272168-61qI3.jpg",List.of(sliceOfLife, school, seinen),null,null));
-        books.add(new Book(null,"Akane Banashi","Yuki Suenaga",629.00,"Rakugo performance story.","https://comicvine.gamespot.com/a/uploads/scale_large/11157/111574229/8514808-ftb4xemwuaiwhdn.jpg",List.of(drama, shonen, sliceOfLife),null,null)); // Hajime no Ippo
+        books.add(new Book(null,"Akane Banashi","Yuki Suenaga",629.00,"Akane-banashi follows Akane Osaki, a determined girl who enters the world of rakugo storytelling after her father is expelled from the profession. As she trains under strict masters, Akane works to master the art and restore her father’s honor.","https://comicvine.gamespot.com/a/uploads/scale_large/11157/111574229/8514808-ftb4xemwuaiwhdn.jpg",List.of(drama, shonen, sliceOfLife),null,null));
 
         books.sort((a, b) -> a.getTitle().compareToIgnoreCase(b.getTitle()));
         bookRepository.saveAll(books);
