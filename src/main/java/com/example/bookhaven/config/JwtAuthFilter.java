@@ -1,3 +1,4 @@
+// Intercepts incoming requests and checks if the token is valid
 package com.example.bookhaven.config;
 
 import com.example.bookhaven.service.CustomUserDetailsService;

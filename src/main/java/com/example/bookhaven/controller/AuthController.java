@@ -1,3 +1,4 @@
+// Handles login and registration of users
 package com.example.bookhaven.controller;
 
 import com.example.bookhaven.dto.LoginResponseDTO;

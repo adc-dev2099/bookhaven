@@ -1,3 +1,4 @@
+// Handles adding items to cart, updating quantity, and viewing cart items
 package com.example.bookhaven.controller;
 
 import com.example.bookhaven.dto.CartRequestDTO;

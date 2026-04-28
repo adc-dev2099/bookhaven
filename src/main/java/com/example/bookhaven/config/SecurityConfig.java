@@ -1,3 +1,5 @@
+// Defines which endpoints are public and which require authentication,
+// disables the CSRF, and sets session management to stateless
 package com.example.bookhaven.config;
 
 //import jakarta.servlet.http.HttpServletResponse;

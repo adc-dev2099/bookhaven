@@ -1,3 +1,4 @@
+// Loads preset data such as sample books, users, and genres for testing
 package com.example.bookhaven.controller;
 
 import com.example.bookhaven.preset.BookHavenPreset;

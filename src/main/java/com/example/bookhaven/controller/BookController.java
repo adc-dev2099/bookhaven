@@ -1,3 +1,4 @@
+// Manages retrieving books and filtering by category
 package com.example.bookhaven.controller;
 
 import com.example.bookhaven.model.Book;

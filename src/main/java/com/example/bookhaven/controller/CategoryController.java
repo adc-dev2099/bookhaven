@@ -1,3 +1,4 @@
+// Retrieves categories
 package com.example.bookhaven.controller;
 
 import com.example.bookhaven.model.Category;

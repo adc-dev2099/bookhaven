@@ -1,3 +1,4 @@
+// Responsible for generating and validating tokens
 package com.example.bookhaven.config;
 
 import io.jsonwebtoken.Claims;

@@ -1,3 +1,4 @@
+// Manages user related operations
 package com.example.bookhaven.controller;
 
 import com.example.bookhaven.model.User;
