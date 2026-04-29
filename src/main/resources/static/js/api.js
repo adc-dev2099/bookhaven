@@ -49,13 +49,19 @@ async function apiFetch(path, options = {}) {
       ? await res.json()
       : await res.text();
 
+  // ✅ 401 (not logged in / expired)
   if (res.status === 401 && Auth.isLoggedIn()) {
-    // do not kill session during login redirect
     if (!window.location.pathname.includes('login.html')) {
       Auth.clear();
       window.location.href = 'login.html';
     }
     return null;
+  }
+
+// ✅ 403 (no permission)
+  if (res.status === 403) {
+    toast("Error", "error");
+    throw new Error("Price must be greater than 0");
   }
 
   if (!res.ok) {

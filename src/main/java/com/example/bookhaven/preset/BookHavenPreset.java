@@ -1,3 +1,4 @@
+// helps to populate the db with preset data
 package com.example.bookhaven.preset;
 
 import com.example.bookhaven.model.Book;

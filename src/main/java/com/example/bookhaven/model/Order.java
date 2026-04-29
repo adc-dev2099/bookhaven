@@ -1,3 +1,4 @@
+// belongs to the user and has order items
 package com.example.bookhaven.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

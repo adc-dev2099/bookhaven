@@ -1,3 +1,4 @@
+// manages adding items to cart and computing totals
 package com.example.bookhaven.service;
 
 import com.example.bookhaven.dto.CartResponseDTO;

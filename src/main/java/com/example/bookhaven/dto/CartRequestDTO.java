@@ -1,3 +1,4 @@
+// used when adding items to cart
 package com.example.bookhaven.dto;
 
 import lombok.AllArgsConstructor;

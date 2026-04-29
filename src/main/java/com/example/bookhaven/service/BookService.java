@@ -1,3 +1,4 @@
+// handles retrieving books and admin book management
 package com.example.bookhaven.service;
 
 import com.example.bookhaven.model.Book;

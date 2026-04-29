@@ -1,3 +1,4 @@
+// connects cart and book
 package com.example.bookhaven.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;

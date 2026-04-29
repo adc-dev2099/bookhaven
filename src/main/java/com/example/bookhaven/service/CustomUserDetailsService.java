@@ -1,3 +1,4 @@
+// loads user details from database for spring security authentication
 package com.example.bookhaven.service;
 
 import com.example.bookhaven.model.User;

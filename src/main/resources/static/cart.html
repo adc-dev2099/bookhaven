@@ -229,7 +229,7 @@ Remove
 
 <div class="summary-row">
 <span>Items</span>
-<span>${items.length}</span>
+<span>${items.reduce((sum,item)=>sum+item.quantity,0)}</span>
 </div>
 
 <div class="summary-total">

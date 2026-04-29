@@ -1,3 +1,4 @@
+// returns confirmation after registration
 package com.example.bookhaven.dto;
 
 import lombok.AllArgsConstructor;

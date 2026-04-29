@@ -1,3 +1,4 @@
+// has one cart and can have many orders
 package com.example.bookhaven.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

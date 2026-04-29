@@ -1,3 +1,4 @@
+// returns the JWT tokens
 package com.example.bookhaven.dto;
 
 import lombok.AllArgsConstructor;

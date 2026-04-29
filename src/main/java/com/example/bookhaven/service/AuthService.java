@@ -1,3 +1,4 @@
+// handles login and registration logic and generates jwt tokens
 package com.example.bookhaven.service;
 
 import com.example.bookhaven.dto.LoginResponseDTO;

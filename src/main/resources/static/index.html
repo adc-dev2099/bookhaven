@@ -10,23 +10,26 @@
     <style>
       :root{
         /* BACKGROUND */
-        --bg:          #0f0f14;
-        --card:        #17171c;
-        --card-2:      #14141a;
-        --border:      #2a2a32;
+        --bg:          #0A0A0A;
+        --card:        #141414;
+        --card-2:      #1A1A1A;
+        --border:      #262626;
 
-        /* MANGA ACCENT */
-        --gold:        #ff0055;
-        --gold-light:  #ff336f;
-        --gold-pale:   rgba(255,0,85,0.12);
+        /* BLUE MANGA ACCENT */
+        --gold:        #2563EB;
+        --gold-light:  #60A5FA;
+        --gold-pale:   rgba(37,99,235,0.12);
+
+        /* SECONDARY ACCENT */
+        --accent-2:    #38BDF8;
 
         /* TEXT */
-        --text:#f5f5f7;
-        --muted:#8b8b95;
+        --text:        #F5F5F5;
+        --muted:       #A3A3A3;
       }
 
       body{
-        background:linear-gradient(180deg,#070b14 0%, #0b0f1a 100%);
+        background:linear-gradient(180deg,#050505 0%, #0A0A0A 100%);
       }
 
       #main-nav{margin-bottom:20px}
@@ -36,7 +39,7 @@
         position:relative;
         padding:80px 20px 60px;
         text-align:center;
-        background:radial-gradient(circle at 50% 0%, rgba(255,46,99,.18), transparent 60%);
+        background:radial-gradient(circle at 50% 0%, rgba(37,99,235,.18), transparent 60%);
       }
 
       .hero h1{
@@ -113,7 +116,7 @@
       .book-card:hover{
         transform:translateY(-6px);
         box-shadow:0 10px 30px rgba(0,0,0,.4);
-        border-color:rgba(255,46,99,.4);
+        border-color:rgba(37,99,235,.5);
       }
 
       .book-cover{
@@ -163,13 +166,6 @@
       }
 
       /* PAGINATION */
-      #pagination{
-        display:flex;
-        justify-content:center;
-        gap:8px;
-        padding-bottom:50px;
-      }
-
       #pagination{
         display:flex;
         justify-content:center;
@@ -305,7 +301,7 @@
       }
 
       .qty-stepper button:hover{
-        background:rgba(201,168,76,.15);
+        background:rgba(37,99,235,.15);
       }
 
       .qty-stepper span{
@@ -386,7 +382,7 @@
         z-index:999;
 
         max-height:260px;
-        overflow-y:auto;   /* SCROLL HERE */
+        overflow-y:auto;
       }
 
       .dropdown-menu.show{
@@ -414,8 +410,8 @@
   </div>
 
   <section class="hero">
-    <h1>Discover Your Next Read</h1>
-    <p>Browse our premium collection of books</p>
+    <h1>One Place. Endless Stories.</h1>
+    <p>Browse hundreds of books and discover your next great read.</p>
 
     <div class="hero-actions">
       <button class="btn btn-primary"

@@ -1,3 +1,4 @@
+// used during registration
 package com.example.bookhaven.dto;
 
 import lombok.AllArgsConstructor;

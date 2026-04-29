@@ -1,3 +1,4 @@
+// used during login
 package com.example.bookhaven.dto;
 
 import lombok.AllArgsConstructor;

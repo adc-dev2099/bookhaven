@@ -1,3 +1,4 @@
+// manages user data
 package com.example.bookhaven.repository;
 
 import com.example.bookhaven.model.User;

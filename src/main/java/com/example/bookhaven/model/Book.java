@@ -1,3 +1,4 @@
+// belongs to a category
 package com.example.bookhaven.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

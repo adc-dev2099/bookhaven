@@ -1,3 +1,4 @@
+// returns cart details and total price
 package com.example.bookhaven.dto;
 
 import lombok.AllArgsConstructor;

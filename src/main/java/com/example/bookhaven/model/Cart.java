@@ -1,3 +1,4 @@
+// belongs to a user and has cart items
 package com.example.bookhaven.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;

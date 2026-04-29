@@ -1,3 +1,4 @@
+// contains many books
 package com.example.bookhaven.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

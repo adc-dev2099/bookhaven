@@ -1,3 +1,4 @@
+// manages user related logic
 package com.example.bookhaven.service;
 
 import com.example.bookhaven.dto.RegisterResponseDTO;

@@ -1,3 +1,4 @@
+// connects order and book
 package com.example.bookhaven.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
